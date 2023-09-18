@@ -38,8 +38,9 @@ export default function ContactModal(props: {
 	onClose: () => void;
 	isOpen: boolean;
 	isEditing: boolean;
+	selectedContactIndex?: number;
 }): JSX.Element {
-	const { onClose, isOpen, isEditing } = props;
+	const { onClose, isOpen, isEditing, selectedContactIndex } = props;
 	return (
 		<Modal isOpen={isOpen} onClose={onClose}>
 			<ModalOverlay />
@@ -49,7 +50,11 @@ export default function ContactModal(props: {
 				</ModalHeader>
 				<ModalCloseButton />
 				<ModalBody>
-					<ContactForm onClose={onClose} isEditing={isEditing} />
+					<ContactForm
+						onClose={onClose}
+						isEditing={isEditing}
+						selectedContactIndex={selectedContactIndex}
+					/>
 				</ModalBody>
 			</ModalContent>
 		</Modal>

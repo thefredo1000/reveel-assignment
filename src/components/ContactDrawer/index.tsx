@@ -32,8 +32,9 @@ export default function ContactDrawer(props: {
 	onClose: () => void;
 	isOpen: boolean;
 	isEditing: boolean;
+	selectedContactIndex?: number;
 }): JSX.Element {
-	const { onClose, isOpen, isEditing } = props;
+	const { onClose, isOpen, isEditing, selectedContactIndex } = props;
 	return (
 		<Drawer placement={'bottom'} onClose={onClose} isOpen={isOpen}>
 			<DrawerOverlay />
@@ -42,7 +43,11 @@ export default function ContactDrawer(props: {
 					{isEditing ? 'Edit Contact' : 'New Contact'}
 				</DrawerHeader>
 				<DrawerBody>
-					<ContactForm onClose={onClose} isEditing={isEditing} />
+					<ContactForm
+						onClose={onClose}
+						isEditing={isEditing}
+						selectedContactIndex={selectedContactIndex}
+					/>
 				</DrawerBody>
 			</DrawerContent>
 		</Drawer>

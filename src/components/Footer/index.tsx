@@ -6,9 +6,16 @@ const boldInter = Inter({
 	subsets: ['latin'],
 	display: 'swap',
 });
-export default function ContactDrawer(props: { onOpen: () => void }): JSX.Element {
-	const { onOpen } = props;
+export default function ContactDrawer(props: {
+	onOpen: () => void;
+	setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+}): JSX.Element {
+	const { onOpen, setIsEditing } = props;
 	const [isMobile] = useMediaQuery('(max-width: 610px)');
+	const handleClick = () => {
+		onOpen();
+		setIsEditing(false);
+	};
 	return (
 		<Box
 			left={isMobile ? '0px' : null}
@@ -27,8 +34,8 @@ export default function ContactDrawer(props: { onOpen: () => void }): JSX.Elemen
 				position={isMobile ? 'fixed' : 'relative'}
 				pb={isMobile ? null : '1rem'}
 			>
-				<Button width="100%" onClick={onOpen} variant="outline" colorScheme="purple">
-					Open
+				<Button width="100%" onClick={handleClick} variant="outline" colorScheme="purple">
+					Add New Contact
 				</Button>
 			</Box>
 		</Box>

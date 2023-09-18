@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Inter } from 'next/font/google';
 import {
 	Box,
@@ -24,10 +24,14 @@ import {
 	MenuButton,
 	MenuItem,
 	MenuList,
+	useDisclosure,
+	Tooltip,
 } from '@chakra-ui/react';
 
 import { Contact } from '@interfaces/Contact';
 import truncateEthAddress from 'truncate-eth-address';
+import ContactRemove from '../ContactRemove';
+import { ContactsContext } from '@root/src/contexts/ContactsContext';
 
 const ThreeDotsSvgrepoCom = createIcon({
 	displayName: 'ThreeDotsSvgrepoCom',
@@ -46,138 +50,123 @@ const regularInter = Inter({
 	subsets: ['latin'],
 	display: 'swap',
 });
-export default function ContactsTable(): JSX.Element {
+
+const TableRow = (props: {
+	contact: Contact;
+	handleEditContactClick: () => void;
+	handleEraseContactClick: () => void;
+	setSelectedContactIndex: React.Dispatch<React.SetStateAction<number>>;
+	index: number;
+	setSelectedRemoveIndex: React.Dispatch<React.SetStateAction<number>>;
+}) => {
+	const {
+		contact,
+		handleEditContactClick,
+		handleEraseContactClick,
+		setSelectedContactIndex,
+		index,
+		setSelectedRemoveIndex,
+	} = props;
+	const {
+		isOpen: isTooltipOpen,
+		onOpen: onTooltipOpen,
+		onClose: onTooltipClose,
+	} = useDisclosure();
+
+	return (
+		<Tr key={contact.walletAddress}>
+			<Td p="0" py="0.5rem">
+				<VStack alignItems="flex-start" spacing="2px">
+					<Text fontSize="14px" className={boldInter.className} m={0}>
+						{contact.name}
+					</Text>
+					<Text fontSize="12px" className={regularInter.className} color="gray.500">
+						{truncateEthAddress(contact.walletAddress)}
+					</Text>
+				</VStack>
+			</Td>
+			<Td p="0">
+				<Flex justifyContent="flex-end">
+					<Menu isLazy placement="bottom-end">
+						<MenuButton>
+							<Tooltip
+								className={regularInter.className}
+								label="Address Copied"
+								placement="top-end"
+								closeDelay={500}
+								isOpen={isTooltipOpen}
+								hasArrow
+								arrowSize={10}
+								p="0.5rem"
+							>
+								<Box>
+									<ThreeDotsSvgrepoCom color="grey.200" />
+								</Box>
+							</Tooltip>
+						</MenuButton>
+						<MenuList className={boldInter.className} fontSize="0.875rem">
+							<MenuItem
+								onClick={() => {
+									navigator.clipboard.writeText(contact.walletAddress);
+									onTooltipOpen();
+									setTimeout(() => {
+										onTooltipClose();
+									}, 2000);
+								}}
+							>
+								Copy Address
+							</MenuItem>
+							<MenuItem
+								onClick={() => {
+									setSelectedContactIndex(index);
+									handleEditContactClick();
+								}}
+							>
+								Edit Contact
+							</MenuItem>
+							<MenuItem
+								onClick={() => {
+									setSelectedRemoveIndex(index);
+									handleEraseContactClick();
+								}}
+								color="red"
+							>
+								Remove Contact
+							</MenuItem>
+						</MenuList>
+					</Menu>
+				</Flex>
+			</Td>
+		</Tr>
+	);
+};
+
+export default function ContactsTable(props: {
+	onOpen: () => void;
+	setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+	setSelectedContactIndex: React.Dispatch<React.SetStateAction<number>>;
+}): JSX.Element {
+	const { onOpen: onModalOpen, setIsEditing, setSelectedContactIndex } = props;
 	const [isMobile] = useMediaQuery('(max-width: 610px)');
-	const [contacts, setContacts] = useState<Array<Contact>>([
-		{
-			name: 'Rodrigo Casale',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Cobo',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Rodrigo Casale',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Cobo',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Rodrigo Casale',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Cobo',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Rodrigo Casale',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Cobo',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Rodrigo Casale',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Cobo',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Rodrigo Casale',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Cobo',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Rodrigo Casale',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Cobo',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Rodrigo Casale',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Cobo',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Rodrigo Casale',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Cobo',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Rodrigo Casale',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Cobo',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Rodrigo Casale',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Cobo',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Rodrigo Casale',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Cobo',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Rodrigo Casale',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Cobo',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Rodrigo Casale',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Cobo',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Rodrigo Casale',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Cobo',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Rodrigo Casale',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-		{
-			name: 'Cobo',
-			walletAddress: '0x29FFeBCa51ecD940cb37EF91ff83cD739553b93e',
-		},
-	]);
+	const { contacts, setContacts } = useContext(ContactsContext);
+	const [selectedRemoveIndex, setSelectedRemoveIndex] = useState<number>();
+
+	const {
+		isOpen: isRemoveOpen,
+		onOpen: onRemoveOpen,
+		onClose: onRemoveClose,
+	} = useDisclosure();
+
+	const handleEditContactClick = () => {
+		onModalOpen();
+		setIsEditing(true);
+	};
+
+	const handleEraseContactClick = () => {
+		console.log('Erase contact');
+		onRemoveOpen();
+	};
+
 	return (
 		<Box minH={'40vh'} overflowY="auto">
 			<Box py="1.5rem" className={boldInter.className}>
@@ -186,52 +175,24 @@ export default function ContactsTable(): JSX.Element {
 			<TableContainer overflowY="scroll" maxHeight={isMobile ? 'auto' : '20rem'}>
 				<Table variant="unstyled">
 					<Tbody>
-						{contacts.map(contact => (
-							<Tr key={contact.walletAddress}>
-								<Td p="0" py="0.5rem">
-									<VStack alignItems="flex-start" spacing="2px">
-										<Text fontSize="14px" className={boldInter.className} m={0}>
-											{contact.name}
-										</Text>
-										<Text
-											fontSize="12px"
-											className={regularInter.className}
-											color="gray.500"
-										>
-											{truncateEthAddress(contact.walletAddress)}
-										</Text>
-									</VStack>
-								</Td>
-								<Td p="0">
-									<Flex justifyContent="flex-end">
-										<Menu isLazy placement="bottom-end">
-											<MenuButton>
-												<IconButton
-													isRound={true}
-													variant="ghost"
-													colorScheme="gray"
-													aria-label="More"
-													icon={<ThreeDotsSvgrepoCom color="grey.200" />}
-												/>
-											</MenuButton>
-											<MenuList className={boldInter.className} fontSize="0.875rem">
-												<MenuItem
-													onClick={() => {
-														navigator.clipboard.writeText(contact.walletAddress);
-													}}
-												>
-													Copy Address
-												</MenuItem>
-												<MenuItem>Edit Contact</MenuItem>
-												<MenuItem color="red">Remove Contact</MenuItem>
-											</MenuList>
-										</Menu>
-									</Flex>
-								</Td>
-							</Tr>
+						{contacts.map((contact, index) => (
+							<TableRow
+								contact={contact}
+								handleEditContactClick={handleEditContactClick}
+								handleEraseContactClick={handleEraseContactClick}
+								key={index}
+								setSelectedContactIndex={setSelectedContactIndex}
+								index={index}
+								setSelectedRemoveIndex={setSelectedRemoveIndex}
+							/>
 						))}
 					</Tbody>
 				</Table>
+				<ContactRemove
+					isOpen={isRemoveOpen}
+					onClose={onRemoveClose}
+					selectedContactIndex={selectedRemoveIndex}
+				/>
 			</TableContainer>
 		</Box>
 	);
