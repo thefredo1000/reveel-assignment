@@ -25,9 +25,7 @@ export default function _app({ Component, pageProps, router: { route } }: AppPro
 			<DefaultSeo {...SEO} />
 			<QueryClientProvider client={queryClient}>
 				<ChakraProvider theme={theme}>
-					<MainContentComponent>
-						<Component {...pageProps} key={route} />
-					</MainContentComponent>
+					<Component {...pageProps} key={route} />
 				</ChakraProvider>
 			</QueryClientProvider>
 		</>

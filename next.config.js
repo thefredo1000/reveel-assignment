@@ -53,7 +53,7 @@ module.exports = async _phase => {
 					skipWaiting: true,
 					runtimeCaching,
 					buildExcludes: [/middleware-manifest.json$/],
-					disable: !isProduction,
+					// disable: !isProduction,
 				}),
 			],
 		],
