@@ -26,16 +26,19 @@ import SearchContacts from '../components/SearchContacts';
 import ContactsTable from '../components/ContactsTable';
 import ContactDrawer from '../components/ContactDrawer';
 import Footer from '../components/Footer';
-import { useState } from 'react';
+import { useState, createContext } from 'react';
 import MobileContainer from '../components/MobileContainer';
 import ContactModal from '../components/ContactModal ';
+import { Contact } from '../interfaces/Contact';
+import { ContactsProvider } from '../contexts/ContactsContext';
+import { ethers } from 'ethers';
 
 export default function HomePage() {
 	const router = useRouter();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [isEditing, setIsEditing] = useState<boolean>(false);
+	const [selectedContactIndex, setSelectedContactIndex] = useState<number>();
 	const [isMobile] = useMediaQuery('(max-width: 610px)');
-
 	return (
 		<>
 			<NextSeo
@@ -51,19 +54,35 @@ export default function HomePage() {
 				exit="exit"
 				variants={slide}
 			>
-				<MobileContainer>
-					<Header />
-					<Box py="1rem" px="0.5rem">
-						<SearchContacts />
-						<ContactsTable />
-					</Box>
-					<Footer onOpen={onOpen} />
-					{isMobile ? (
-						<ContactDrawer isOpen={isOpen} onClose={onClose} isEditing={isEditing} />
-					) : (
-						<ContactModal isOpen={isOpen} onClose={onClose} isEditing={isEditing} />
-					)}
-				</MobileContainer>
+				<ContactsProvider>
+					<MobileContainer>
+						<Header />
+						<Box py="1rem" px="0.5rem">
+							<SearchContacts />
+							<ContactsTable
+								onOpen={onOpen}
+								setIsEditing={setIsEditing}
+								setSelectedContactIndex={setSelectedContactIndex}
+							/>
+						</Box>
+						<Footer onOpen={onOpen} setIsEditing={setIsEditing} />
+						{isMobile ? (
+							<ContactDrawer
+								isOpen={isOpen}
+								onClose={onClose}
+								isEditing={isEditing}
+								selectedContactIndex={selectedContactIndex}
+							/>
+						) : (
+							<ContactModal
+								isOpen={isOpen}
+								onClose={onClose}
+								isEditing={isEditing}
+								selectedContactIndex={selectedContactIndex}
+							/>
+						)}
+					</MobileContainer>
+				</ContactsProvider>
 			</MotionContainer>
 		</>
 	);
