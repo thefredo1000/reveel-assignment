@@ -13,9 +13,6 @@ import {
 	useMediaQuery,
 } from '@chakra-ui/react';
 
-// --- Components ---
-const SearchComponent = dynamic(() => import('@root/src/components/SearchGH'));
-
 // --- Motion Components ---
 import MotionContainer from '@components/Motion/MotionContainer';
 
@@ -29,9 +26,32 @@ import Footer from '../components/Footer';
 import { useState, createContext } from 'react';
 import MobileContainer from '../components/MobileContainer';
 import ContactModal from '../components/ContactModal ';
-import { Contact } from '../interfaces/Contact';
 import { ContactsProvider } from '../contexts/ContactsContext';
-import { ethers } from 'ethers';
+
+function ContactFormWrapper(props: {
+	isMobile: boolean;
+	onClose: () => void;
+	isOpen: boolean;
+	isEditing: boolean;
+	selectedContactIndex?: number;
+}) {
+	const { isMobile, onClose, isOpen, isEditing, selectedContactIndex } = props;
+	return isMobile ? (
+		<ContactDrawer
+			isOpen={isOpen}
+			onClose={onClose}
+			isEditing={isEditing}
+			selectedContactIndex={selectedContactIndex}
+		/>
+	) : (
+		<ContactModal
+			isOpen={isOpen}
+			onClose={onClose}
+			isEditing={isEditing}
+			selectedContactIndex={selectedContactIndex}
+		/>
+	);
+}
 
 export default function HomePage() {
 	const router = useRouter();
@@ -58,7 +78,6 @@ export default function HomePage() {
 					<MobileContainer>
 						<Header />
 						<Box py="1rem" px="0.5rem">
-							<SearchContacts />
 							<ContactsTable
 								onOpen={onOpen}
 								setIsEditing={setIsEditing}
@@ -66,21 +85,13 @@ export default function HomePage() {
 							/>
 						</Box>
 						<Footer onOpen={onOpen} setIsEditing={setIsEditing} />
-						{isMobile ? (
-							<ContactDrawer
-								isOpen={isOpen}
-								onClose={onClose}
-								isEditing={isEditing}
-								selectedContactIndex={selectedContactIndex}
-							/>
-						) : (
-							<ContactModal
-								isOpen={isOpen}
-								onClose={onClose}
-								isEditing={isEditing}
-								selectedContactIndex={selectedContactIndex}
-							/>
-						)}
+						<ContactFormWrapper
+							isOpen={isOpen}
+							onClose={onClose}
+							isEditing={isEditing}
+							selectedContactIndex={selectedContactIndex}
+							isMobile={isMobile}
+						/>
 					</MobileContainer>
 				</ContactsProvider>
 			</MotionContainer>
