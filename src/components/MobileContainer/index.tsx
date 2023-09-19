@@ -7,7 +7,14 @@ export default function MobileContainer({ children }): JSX.Element {
 		children
 	) : (
 		<Center py="4rem">
-			<Box width="26rem" border="1px" borderColor="gray.200" px="1rem">
+			<Box
+				borderRadius="0.5rem"
+				width="26rem"
+				border="1px"
+				borderColor="gray.200"
+				px="1rem"
+				boxShadow="lg"
+			>
 				{children}
 			</Box>
 		</Center>
