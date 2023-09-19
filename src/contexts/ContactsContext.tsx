@@ -3,7 +3,7 @@ import { Contact } from '../interfaces/Contact';
 
 export const ContactsContext = createContext(null);
 
-const useLocalStorage = (key: string, initialValue: Contact) => {
+const useLocalStorage = (key: string, initialValue: Array<Contact>) => {
 	const [contacts, setStoredContacts] = useState<any>(() => {
 		if (typeof window === 'undefined') {
 			return initialValue;
