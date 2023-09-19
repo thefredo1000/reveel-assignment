@@ -44,7 +44,7 @@ export default function ContactRemove(props: {
 	selectedContactIndex: number;
 }): JSX.Element {
 	const { onClose, isOpen, selectedContactIndex } = props;
-	const { contacts, setContacts } = useContext(ContactsContext);
+	const { removeContact } = useContext(ContactsContext);
 	const [isMobile] = useMediaQuery('(max-width: 610px)');
 
 	const handleCancel = () => {
@@ -52,9 +52,7 @@ export default function ContactRemove(props: {
 	};
 
 	const handleOk = () => {
-		console.log(contacts[selectedContactIndex]);
-		const newContacts = contacts.filter((_, index) => index !== selectedContactIndex);
-		setContacts(newContacts);
+		removeContact(selectedContactIndex);
 		onClose();
 	};
 	return isMobile ? (

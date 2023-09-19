@@ -22,7 +22,7 @@ export default function ContactForm(props: {
 	selectedContactIndex?: number;
 }): JSX.Element {
 	const { onClose, selectedContactIndex } = props;
-	const { contacts, setContacts } = useContext(ContactsContext);
+	const { contacts, addContact, editContact } = useContext(ContactsContext);
 	const [contact, setContact] = useState<{
 		name: string;
 		email?: string;
@@ -53,15 +53,12 @@ export default function ContactForm(props: {
 
 	const handleAddContact = async () => {
 		if (ethers.isAddress(contact.wallet)) {
-			setContacts([
-				...contacts,
-				{
-					name: contact.name,
-					email: contact.email,
-					walletAddress: contact.wallet,
-					walletENS: undefined,
-				},
-			]);
+			addContact({
+				name: contact.name,
+				email: contact.email,
+				walletAddress: contact.wallet,
+				walletENS: undefined,
+			});
 		} else {
 			let provider;
 			if (window.ethereum == null) {
@@ -70,15 +67,12 @@ export default function ContactForm(props: {
 				provider = new ethers.BrowserProvider(window.ethereum);
 				const address = await provider.resolveName(contact.wallet);
 				if (address != null) {
-					setContacts([
-						...contacts,
-						{
-							name: contact.name,
-							email: contact.email,
-							walletAddress: address,
-							walletENS: contact.wallet,
-						},
-					]);
+					addContact({
+						name: contact.name,
+						email: contact.email,
+						walletAddress: address,
+						walletENS: contact.wallet,
+					});
 				}
 			}
 		}
@@ -88,14 +82,15 @@ export default function ContactForm(props: {
 	const handleEditContact = async () => {
 		console.log('Editing contact');
 		if (ethers.isAddress(contact.wallet)) {
-			let newContacts = contacts;
-			newContacts[selectedContactIndex] = {
-				name: contact.name,
-				email: contact.email,
-				walletAddress: contact.wallet,
-				walletENS: undefined,
-			};
-			setContacts(newContacts);
+			editContact(
+				{
+					name: contact.name,
+					email: contact.email,
+					walletAddress: contact.wallet,
+					walletENS: undefined,
+				},
+				selectedContactIndex
+			);
 		} else {
 			let provider;
 			if (window.ethereum == null) {
@@ -104,14 +99,15 @@ export default function ContactForm(props: {
 				provider = new ethers.BrowserProvider(window.ethereum);
 				const address = await provider.resolveName(contact.wallet);
 				if (address != null) {
-					let newContacts = contacts;
-					newContacts[selectedContactIndex] = {
-						name: contact.name,
-						email: contact.email,
-						walletAddress: address,
-						walletENS: contact.wallet,
-					};
-					setContacts(newContacts);
+					editContact(
+						{
+							name: contact.name,
+							email: contact.email,
+							walletAddress: address,
+							walletENS: contact.wallet,
+						},
+						selectedContactIndex
+					);
 				} else {
 					// HANDLE ENS ERROR
 				}
