@@ -106,7 +106,7 @@ export default function ContactForm(props: {
 				provider = ethers.getDefaultProvider('https://eth.rpc.blxrbdn.com');
 				const address = await provider.resolveName(contact.wallet);
 				if (address != null) {
-					addContact({
+					editContact({
 						name: contact.name,
 						email: contact.email,
 						walletAddress: address,
