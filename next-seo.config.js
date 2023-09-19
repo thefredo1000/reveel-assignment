@@ -1,23 +1,15 @@
 /** @type {import('next-seo').DefaultSeoProps} */
 const defaultSEOConfig = {
 	type: 'website',
-	titleTemplate: '%s | Next-Plate',
-	defaultTitle: 'Next-Plate',
-	description: '🦸‍♀️ A super template for Next.js with a pack of incredible tools',
-	site_name: 'Next-Plate',
+	titleTemplate: '%s | Reveel-assignment',
+	defaultTitle: 'Reveel-assignment',
+	description: 'Reveel assignment - Casale',
+	site_name: 'Reveel-assignment',
 	openGraph: {
-		url: 'https://next-plate.vercel.app',
-		title: 'Next-Plate',
-		description: '🦸‍♀️ A super template for Next.js with a pack of incredible tools',
-		images: [
-			{
-				url: 'https://next-plate.vercel.app/static/images/banner.jpg',
-				width: 512,
-				height: 256,
-				alt: 'Next-Plate Banner Image',
-			},
-		],
-		site_name: 'Next-Plate',
+		url: 'https://reveel-assignment.vercel.app/',
+		title: 'Reveel assignment - Casale',
+		description: 'Reveel assignment - Casale',
+		site_name: 'Reveel-assignmente',
 	},
 };
 

@@ -37,7 +37,7 @@ export default class Document extends NextDocument {
 						type="image/png"
 						sizes="32x32"
 					/>
-					<link rel="apple-touch-icon" href="/static/icons/icon-32x32.png" />
+					<link rel="apple-touch-icon" href="/assets/icons/icon-32x32.png" />
 					<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 					<link rel="preconnect" href="https://fonts.gstatic.com" />
 					<link
