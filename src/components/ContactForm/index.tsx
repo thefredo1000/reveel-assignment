@@ -62,7 +62,16 @@ export default function ContactForm(props: {
 		} else {
 			let provider;
 			if (window.ethereum == null) {
-				provider = ethers.getDefaultProvider('Ethereum');
+				provider = ethers.getDefaultProvider('https://eth.rpc.blxrbdn.com');
+				const address = await provider.resolveName(contact.wallet);
+				if (address != null) {
+					addContact({
+						name: contact.name,
+						email: contact.email,
+						walletAddress: address,
+						walletENS: contact.wallet,
+					});
+				}
 			} else {
 				provider = new ethers.BrowserProvider(window.ethereum);
 				const address = await provider.resolveName(contact.wallet);

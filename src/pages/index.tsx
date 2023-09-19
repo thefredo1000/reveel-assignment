@@ -23,10 +23,11 @@ import SearchContacts from '../components/SearchContacts';
 import ContactsTable from '../components/ContactsTable';
 import ContactDrawer from '../components/ContactDrawer';
 import Footer from '../components/Footer';
-import { useState, createContext } from 'react';
+import { useState, createContext, use, useEffect } from 'react';
 import MobileContainer from '../components/MobileContainer';
 import ContactModal from '../components/ContactModal ';
 import { ContactsProvider } from '../contexts/ContactsContext';
+import { ethers } from 'ethers';
 
 function ContactFormWrapper(props: {
 	isMobile: boolean;

@@ -2,6 +2,7 @@ import { Box, Center, useMediaQuery } from '@chakra-ui/react';
 
 export default function MobileContainer({ children }): JSX.Element {
 	const [isMobile] = useMediaQuery('(max-width: 610px)');
+
 	return isMobile ? (
 		children
 	) : (
