@@ -1,10 +1,39 @@
-import React, { useState, createContext } from 'react';
+import React, { useState, createContext, useEffect } from 'react';
 import { Contact } from '../interfaces/Contact';
 
 export const ContactsContext = createContext(null);
+
+const useLocalStorage = (key: string, initialValue: Contact) => {
+	const [contacts, setStoredContacts] = useState<any>(() => {
+		if (typeof window === 'undefined') {
+			return initialValue;
+		}
+		try {
+			const item = localStorage.getItem(key);
+			return item ? JSON.parse(item) : initialValue;
+		} catch (error) {
+			console.log(error);
+			return initialValue;
+		}
+	});
+	const setContacts = (value: any) => {
+		try {
+			setStoredContacts(value);
+
+			if (typeof window !== 'undefined') {
+				localStorage.setItem(key, JSON.stringify(value));
+				console.log(JSON.stringify(value));
+				return;
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
+	return [contacts, setContacts];
+};
+
 export const ContactsProvider = props => {
-	const [contacts, setContacts] = useState<Array<Contact>>([]);
-	const [filteredContacts, setFilteredContacts] = useState<Array<Contact>>(contacts);
+	const [contacts, setContacts] = useLocalStorage('contacts', []);
 	function addContact(contact: Contact) {
 		setContacts([...contacts, contact]);
 	}
@@ -26,8 +55,6 @@ export const ContactsProvider = props => {
 				addContact,
 				editContact,
 				removeContact,
-				filteredContacts,
-				setFilteredContacts,
 			}}
 		>
 			{props.children}
