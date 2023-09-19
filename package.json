@@ -2,8 +2,8 @@
 	"name": "next-plate",
 	"version": "1.11.0",
 	"private": true,
-	"author": "Gustavo Matheus <gustavo.morinaga27@gmail.com>",
-	"description": "A super template for Next.js with a pack of incredible tools",
+	"author": "Rodrigo Casale",
+	"description": "A project by Casale",
 	"lint-staged": {
 		"src/**/*.+(js|jsx|ts|tsx|json|md)": [
 			"pnpm run lint:fix"

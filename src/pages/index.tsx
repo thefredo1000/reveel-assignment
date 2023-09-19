@@ -62,10 +62,7 @@ export default function HomePage() {
 	const [isMobile] = useMediaQuery('(max-width: 610px)');
 	return (
 		<>
-			<NextSeo
-				title="Search"
-				description="🦸‍♀️ A super template for Next.js with a pack of incredible tools"
-			/>
+			<NextSeo title="Reveel Assignment" description="Built by Rodrigo Casale 👷‍♂️" />
 
 			<MotionContainer
 				w="full"
