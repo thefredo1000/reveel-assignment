@@ -26,13 +26,13 @@ export default class Document extends NextDocument {
 				<Head>
 					<link rel="manifest" href="/site.webmanifest" />
 					<link
-						href="/static/icons/icon-16x16.png"
+						href="/assets/icons/icon-16x16.png"
 						rel="icon"
 						type="image/png"
 						sizes="16x16"
 					/>
 					<link
-						href="/static/icons/icon-32x32.png"
+						href="/assets/icons/icon-32x32.png"
 						rel="icon"
 						type="image/png"
 						sizes="32x32"
