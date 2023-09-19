@@ -12,7 +12,7 @@ const useLocalStorage = (key: string, initialValue: Array<Contact>) => {
 			const item = localStorage.getItem(key);
 			return item ? JSON.parse(item) : initialValue;
 		} catch (error) {
-			console.log(error);
+			console.error(error);
 			return initialValue;
 		}
 	});
@@ -22,11 +22,10 @@ const useLocalStorage = (key: string, initialValue: Array<Contact>) => {
 
 			if (typeof window !== 'undefined') {
 				localStorage.setItem(key, JSON.stringify(value));
-				console.log(JSON.stringify(value));
 				return;
 			}
 		} catch (error) {
-			console.log(error);
+			console.error(error);
 		}
 	};
 	return [contacts, setContacts];

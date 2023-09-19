@@ -1,7 +1,7 @@
 import { Inter } from 'next/font/google';
-import { Box, Button, Flex, Input, Text } from '@chakra-ui/react';
+import { Box, Button, Center, Flex, Input, Spinner, Text } from '@chakra-ui/react';
 import { ContactsContext } from '@root/src/contexts/ContactsContext';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Contact } from '@root/src/interfaces/Contact';
 import { ethers } from 'ethers';
 
@@ -23,6 +23,7 @@ export default function ContactForm(props: {
 }): JSX.Element {
 	const { onClose, selectedContactIndex } = props;
 	const { contacts, addContact, editContact } = useContext(ContactsContext);
+	const isFirstRender = useRef(true);
 	const [contact, setContact] = useState<{
 		name: string;
 		email?: string;
@@ -37,10 +38,13 @@ export default function ContactForm(props: {
 					walletENS: '',
 			  }
 	);
+	const [isWalletValid, setIsWalletValid] = useState<boolean>(true);
+	const [isENSValid, setIsENSValid] = useState<boolean>(true);
+	const [isNameValid, setIsNameValid] = useState<boolean>(true);
+	const [loading, setLoading] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (props.isEditing) {
-			console.log(selectedContactIndex);
 			setContact({
 				name: contacts[selectedContactIndex].name,
 				email: contacts[selectedContactIndex].email,
@@ -52,7 +56,24 @@ export default function ContactForm(props: {
 	}, [contacts, props.isEditing, selectedContactIndex]);
 
 	const handleAddContact = async () => {
+		setLoading(true);
+		if (contact.name === '' || contact.name === undefined) {
+			setIsNameValid(false);
+			setLoading(false);
+			return;
+		} else {
+			setIsNameValid(true);
+		}
+		if (contact.wallet === '' || contact.wallet === undefined) {
+			setIsWalletValid(false);
+			setLoading(false);
+			return;
+		} else {
+			setIsWalletValid(true);
+		}
+
 		if (ethers.isAddress(contact.wallet)) {
+			setIsWalletValid(true);
 			addContact({
 				name: contact.name,
 				email: contact.email,
@@ -65,23 +86,34 @@ export default function ContactForm(props: {
 				provider = ethers.getDefaultProvider('https://eth.rpc.blxrbdn.com');
 				const address = await provider.resolveName(contact.wallet);
 				if (address != null) {
+					setIsENSValid(true);
 					addContact({
 						name: contact.name,
 						email: contact.email,
 						walletAddress: address,
 						walletENS: contact.wallet,
 					});
+				} else {
+					// HANDLE ENS ERROR
+					setIsENSValid(false);
+					setLoading(false);
+					return;
 				}
 			} else {
 				provider = new ethers.BrowserProvider(window.ethereum);
 				const address = await provider.resolveName(contact.wallet);
 				if (address != null) {
+					setIsENSValid(true);
 					addContact({
 						name: contact.name,
 						email: contact.email,
 						walletAddress: address,
 						walletENS: contact.wallet,
 					});
+				} else {
+					setIsENSValid(false);
+					setLoading(false);
+					return;
 				}
 			}
 		}
@@ -89,8 +121,24 @@ export default function ContactForm(props: {
 	};
 
 	const handleEditContact = async () => {
-		console.log('Editing contact');
+		setLoading(true);
+		if (contact.name === '' || contact.name === undefined) {
+			setIsNameValid(false);
+			setLoading(false);
+			return;
+		} else {
+			setIsNameValid(true);
+		}
+		if (contact.wallet === '' || contact.wallet === undefined) {
+			setIsWalletValid(false);
+			setLoading(false);
+			return;
+		} else {
+			setIsWalletValid(true);
+		}
+
 		if (ethers.isAddress(contact.wallet)) {
+			setIsWalletValid(true);
 			editContact(
 				{
 					name: contact.name,
@@ -106,17 +154,7 @@ export default function ContactForm(props: {
 				provider = ethers.getDefaultProvider('https://eth.rpc.blxrbdn.com');
 				const address = await provider.resolveName(contact.wallet);
 				if (address != null) {
-					editContact({
-						name: contact.name,
-						email: contact.email,
-						walletAddress: address,
-						walletENS: contact.wallet,
-					});
-				}
-			} else {
-				provider = new ethers.BrowserProvider(window.ethereum);
-				const address = await provider.resolveName(contact.wallet);
-				if (address != null) {
+					setIsENSValid(true);
 					editContact(
 						{
 							name: contact.name,
@@ -128,13 +166,45 @@ export default function ContactForm(props: {
 					);
 				} else {
 					// HANDLE ENS ERROR
+					setIsENSValid(false);
+					setLoading(false);
+					return;
+				}
+			} else {
+				provider = new ethers.BrowserProvider(window.ethereum);
+				const address = await provider.resolveName(contact.wallet);
+				if (address != null) {
+					setIsENSValid(true);
+					editContact(
+						{
+							name: contact.name,
+							email: contact.email,
+							walletAddress: address,
+							walletENS: contact.wallet,
+						},
+						selectedContactIndex
+					);
+				} else {
+					setIsENSValid(false);
+					setLoading(false);
+					return;
 				}
 			}
 		}
 		onClose();
 	};
-	return (
-		<>
+	return loading ? (
+		<Center height="20rem">
+			<Spinner
+				thickness="4px"
+				speed="0.65s"
+				emptyColor="gray.200"
+				color="purple.500"
+				size="xl"
+			/>
+		</Center>
+	) : (
+		<div style={{ minHeight: '20rem' }}>
 			<Box py="0.5rem">
 				<Text fontSize={'0.875rem'} pb="0.5rem" className={boldInter.className}>
 					Wallet address or ENS
@@ -143,6 +213,7 @@ export default function ContactForm(props: {
 					variant="filled"
 					placeholder="0x..."
 					value={contact.wallet}
+					isInvalid={!isWalletValid || !isENSValid}
 					onChange={e => {
 						setContact({
 							...contact,
@@ -150,6 +221,15 @@ export default function ContactForm(props: {
 						});
 					}}
 				/>
+				{!isWalletValid ? (
+					<Text color="red" fontSize="sm" pt="0.5rem">
+						Invalid wallet address
+					</Text>
+				) : !isENSValid ? (
+					<Text color="red" fontSize="sm" pt="0.5rem">
+						Invalid ENS
+					</Text>
+				) : null}
 			</Box>
 			<Box py="0.5rem">
 				<Flex
@@ -183,6 +263,7 @@ export default function ContactForm(props: {
 					variant="filled"
 					placeholder="John Doe"
 					value={contact.name}
+					isInvalid={!isNameValid}
 					onChange={e => {
 						setContact({
 							...contact,
@@ -190,6 +271,11 @@ export default function ContactForm(props: {
 						});
 					}}
 				/>
+				{!isNameValid ? (
+					<Text color="red" fontSize="sm" pt="0.5rem">
+						Invalid name
+					</Text>
+				) : null}
 			</Box>
 			<Box py="1rem">
 				<Button
@@ -201,6 +287,6 @@ export default function ContactForm(props: {
 					{props.isEditing ? 'Save Edits' : 'Add Contact'}
 				</Button>
 			</Box>
-		</>
+		</div>
 	);
 }

@@ -157,7 +157,6 @@ export default function ContactsTable(props: {
 	};
 
 	const handleEraseContactClick = () => {
-		console.log('Erase contact');
 		onRemoveOpen();
 	};
 
