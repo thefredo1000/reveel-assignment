@@ -9,7 +9,10 @@ const inter = Inter({
 	display: 'swap',
 });
 
-export default function SearchContacts(): JSX.Element {
+export default function SearchContacts(props: {
+	setSearchInput: React.Dispatch<React.SetStateAction<string>>;
+}): JSX.Element {
+	const { setSearchInput } = props;
 	return (
 		<InputGroup>
 			<Input
@@ -17,6 +20,7 @@ export default function SearchContacts(): JSX.Element {
 				variant="filled"
 				placeholder="Search by name or paste address / ENS"
 				fontSize="0.875rem"
+				onChange={e => setSearchInput(e.target.value)}
 			/>
 			<InputRightElement pt="8px">
 				<SearchIcon color="gray.500" />

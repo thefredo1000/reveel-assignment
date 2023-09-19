@@ -3,23 +3,15 @@ import { Inter } from 'next/font/google';
 import {
 	Box,
 	Flex,
-	Icon,
-	Stack,
 	Table,
-	TableCaption,
 	TableContainer,
 	Tbody,
 	Td,
 	Text,
-	Tfoot,
-	Th,
-	Thead,
 	Tr,
 	VStack,
 	useMediaQuery,
 	createIcon,
-	Button,
-	IconButton,
 	Menu,
 	MenuButton,
 	MenuItem,
@@ -32,6 +24,7 @@ import { Contact } from '@interfaces/Contact';
 import truncateEthAddress from 'truncate-eth-address';
 import ContactRemove from '../ContactRemove';
 import { ContactsContext } from '@root/src/contexts/ContactsContext';
+import SearchContacts from '../SearchContacts';
 
 const ThreeDotsSvgrepoCom = createIcon({
 	displayName: 'ThreeDotsSvgrepoCom',
@@ -148,8 +141,9 @@ export default function ContactsTable(props: {
 }): JSX.Element {
 	const { onOpen: onModalOpen, setIsEditing, setSelectedContactIndex } = props;
 	const [isMobile] = useMediaQuery('(max-width: 610px)');
-	const { contacts, setContacts } = useContext(ContactsContext);
+	const { contacts } = useContext(ContactsContext);
 	const [selectedRemoveIndex, setSelectedRemoveIndex] = useState<number>();
+	const [searchInput, setSearchInput] = useState<string>('');
 
 	const {
 		isOpen: isRemoveOpen,
@@ -168,32 +162,48 @@ export default function ContactsTable(props: {
 	};
 
 	return (
-		<Box minH={'40vh'} overflowY="auto">
-			<Box py="1.5rem" className={boldInter.className}>
-				<Text>All Contacts ({contacts.length})</Text>
+		<>
+			<SearchContacts setSearchInput={setSearchInput} />
+			<Box minH={'40vh'} overflowY="auto">
+				<Box py="1.5rem" className={boldInter.className}>
+					<Text>All Contacts ({contacts.length})</Text>
+				</Box>
+				<TableContainer overflowY="scroll" maxHeight={isMobile ? 'auto' : '20rem'}>
+					<Table variant="unstyled">
+						<Tbody>
+							{contacts.map((contact, index) => {
+								const contactProperties = [
+									contact.name.toLowerCase(),
+									contact.walletAddress.toLowerCase(),
+									contact.email.toLowerCase(),
+									contact.walletENS?.toLowerCase(),
+								];
+								const searchInputLower = searchInput.toLowerCase();
+
+								if (!contactProperties.some(prop => prop.includes(searchInputLower))) {
+									return null;
+								}
+								return (
+									<TableRow
+										contact={contact}
+										handleEditContactClick={handleEditContactClick}
+										handleEraseContactClick={handleEraseContactClick}
+										key={index}
+										setSelectedContactIndex={setSelectedContactIndex}
+										index={index}
+										setSelectedRemoveIndex={setSelectedRemoveIndex}
+									/>
+								);
+							})}
+						</Tbody>
+					</Table>
+					<ContactRemove
+						isOpen={isRemoveOpen}
+						onClose={onRemoveClose}
+						selectedContactIndex={selectedRemoveIndex}
+					/>
+				</TableContainer>
 			</Box>
-			<TableContainer overflowY="scroll" maxHeight={isMobile ? 'auto' : '20rem'}>
-				<Table variant="unstyled">
-					<Tbody>
-						{contacts.map((contact, index) => (
-							<TableRow
-								contact={contact}
-								handleEditContactClick={handleEditContactClick}
-								handleEraseContactClick={handleEraseContactClick}
-								key={index}
-								setSelectedContactIndex={setSelectedContactIndex}
-								index={index}
-								setSelectedRemoveIndex={setSelectedRemoveIndex}
-							/>
-						))}
-					</Tbody>
-				</Table>
-				<ContactRemove
-					isOpen={isRemoveOpen}
-					onClose={onRemoveClose}
-					selectedContactIndex={selectedRemoveIndex}
-				/>
-			</TableContainer>
-		</Box>
+		</>
 	);
 }
