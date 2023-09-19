@@ -18,6 +18,7 @@ import {
 	MenuList,
 	useDisclosure,
 	Tooltip,
+	Center,
 } from '@chakra-ui/react';
 
 import { Contact } from '@interfaces/Contact';
@@ -159,7 +160,6 @@ export default function ContactsTable(props: {
 	const handleEraseContactClick = () => {
 		onRemoveOpen();
 	};
-
 	return (
 		<>
 			<SearchContacts setSearchInput={setSearchInput} />
@@ -170,7 +170,8 @@ export default function ContactsTable(props: {
 				<TableContainer overflowY="scroll" maxHeight={isMobile ? 'auto' : '20rem'}>
 					<Table variant="unstyled">
 						<Tbody>
-							{contacts.map((contact, index) => {
+							{contacts.filter(contact => {
+								// SORRY FOR THIS
 								const contactProperties = [
 									contact.name.toLowerCase(),
 									contact.walletAddress.toLowerCase(),
@@ -180,20 +181,49 @@ export default function ContactsTable(props: {
 								const searchInputLower = searchInput.toLowerCase();
 
 								if (!contactProperties.some(prop => prop.includes(searchInputLower))) {
-									return null;
+									return false;
 								}
-								return (
-									<TableRow
-										contact={contact}
-										handleEditContactClick={handleEditContactClick}
-										handleEraseContactClick={handleEraseContactClick}
-										key={index}
-										setSelectedContactIndex={setSelectedContactIndex}
-										index={index}
-										setSelectedRemoveIndex={setSelectedRemoveIndex}
-									/>
-								);
-							})}
+								return true;
+							}).length > 0 ? (
+								contacts.map((contact, index) => {
+									const contactProperties = [
+										contact.name.toLowerCase(),
+										contact.walletAddress.toLowerCase(),
+										contact.email.toLowerCase(),
+										contact.walletENS?.toLowerCase(),
+									];
+									const searchInputLower = searchInput.toLowerCase();
+
+									if (!contactProperties.some(prop => prop.includes(searchInputLower))) {
+										return null;
+									}
+									return (
+										<TableRow
+											contact={contact}
+											handleEditContactClick={handleEditContactClick}
+											handleEraseContactClick={handleEraseContactClick}
+											key={index}
+											setSelectedContactIndex={setSelectedContactIndex}
+											index={index}
+											setSelectedRemoveIndex={setSelectedRemoveIndex}
+										/>
+									);
+								})
+							) : (
+								<Tr>
+									<Td p="0">
+										<Center>
+											<Text
+												fontSize="14px"
+												className={regularInter.className}
+												color="gray.500"
+											>
+												No Results
+											</Text>
+										</Center>
+									</Td>
+								</Tr>
+							)}
 						</Tbody>
 					</Table>
 					<ContactRemove
